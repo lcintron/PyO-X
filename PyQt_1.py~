@@ -123,7 +123,7 @@ class FullWindow(QtGui.QWidget):
 		self.speedUnit.move(uiSizes.width()/2+105, uiSizes.height()/2-145)
 		self.rpm.setStyleSheet(styles.stylesObd['style1'])	
 		self.rpm.setScaledContents(True)
-		self.rpmUnit.setStyleSheet(styles.stylesObd['style2'])
+		self.rpmUnit.setStyleSheet(stylesObd.stylesObd['style2'])
 		self.rpm.move(uiSizes.width()/2-140, uiSizes.height()/2-50)	
 		self.rpmUnit.move(uiSizes.width()/2+124, uiSizes.height()/2+5)
 		palette1 = QtGui.QPalette()
