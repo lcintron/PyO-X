@@ -1,0 +1,35 @@
+libpythonqt2-dev - Dynamic Python binding for the Qt framework - development
+libpythonqt2.0 - Dynamic Python binding for the Qt framework - runtime
+pyqt-tools - pyuic and pylupdate for Qt3
+pyqt4-dev-tools - Development tools for PyQt4
+python-guiqwt - efficient 2D data-plotting library
+python-pivy - Coin binding for Python
+python-qscintilla2 - Python bindings for QScintilla 2
+python-qt3 - Qt3 bindings for Python
+python-qt3-dbg - Qt3 bindings for Python (debug extension)
+python-qt3-gl - Qt3 OpenGL bindings for Python
+python-qt3-gl-dbg - Qt3 OpenGL bindings for Python (debug extension)
+python-qt4 - Python bindings for Qt4
+python-qt4-dbg - Python bindings for Qt4 (debug extensions)
+python-qt4-dbus - D-Bus Support for PyQt4
+python-qt4-dbus-dbg - D-Bus Support for PyQt4 (debug extensions)
+python-qt4-dev - Development files for PyQt4
+python-qt4-doc - Documentation and examples for PyQt4
+python-qt4-gl - Python bindings for Qt4's OpenGL module
+python-qt4-gl-dbg - Python bindings for Qt4's OpenGL module (debug extension)
+python-qt4-phonon - Python bindings for Phonon
+python-qt4-phonon-dbg - Python bindings for Phonon (debug extensions)
+python-qt4-sql - Python bindings for PyQt4's SQL module
+python-qt4-sql-dbg - Python bindings for PyQt4's SQL module (debug extension)
+python-traitsbackendqt - PyQt backend for Traits and TraitsGUI (Pyface)
+python3-dbus.mainloop.qt - D-Bus Support for PyQt4 with Python 3
+python3-dbus.mainloop.qt-dbg - D-Bus Support for PyQt4 (debug extensions for Python 3)
+python3-pyqt4 - Python3 bindings for Qt4
+python3-pyqt4-dbg - Python3 bindings for Qt4 (debug extensions)
+python3-pyqt4.phonon - Python3 bindings for Phonon
+python3-pyqt4.phonon-dbg - Python3 bindings for Phonon (debug extensions)
+python3-pyqt4.qsci - Python 3 bindings for QScintilla 2
+python3-pyqt4.qtopengl - Python 3 bindings for Qt4's OpenGL module
+python3-pyqt4.qtopengl-dbg - Python 3 bindings for Qt4's OpenGL module (debug extension)
+python3-pyqt4.qtsql - Python3 bindings for PyQt4's SQL module
+python3-pyqt4.qtsql-dbg - Python3 bindings for PyQt4's SQL module (debug extension)
