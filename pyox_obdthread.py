@@ -27,20 +27,20 @@ class pyox_obdthread(QtCore.QThread):
 		for index, e in enumerate(self.labels_collection):
 			if e == 'connecting':
 				self.labels_collection[e].setVisible(True)
-			else:
-				self.labels_collection[e].setVisible(False)
+			#else:
+			#	self.labels_collection[e].setVisible(False)
 
 	def showconnected(self):
 		for index, e in enumerate(self.labels_collection):
 			if index == 'connecting':
 				self.labels_collection[e].setVisible(False)
-			else:
-				self.labels_collection[e].setVisible(True)
+			#else:
+			#	self.labels_collection[e].setVisible(True)
 
 	def connect(self):
-		portnames = scanSerial()
 		dot = 0
 		while self.port is None:
+			portnames = scanSerial()
 			self.showdisconnected()
 			if dot == 0:
 				self.labels_collection['connecting'].setText('Connecting')
@@ -97,7 +97,7 @@ class pyox_obdthread(QtCore.QThread):
 			self.connect()
 			self.read_obd()
 			#self.simulate_obd()
-			time.sleep(.01)
+			#time.sleep(.01)
 
 
 	def read_obd(self):
@@ -106,6 +106,7 @@ class pyox_obdthread(QtCore.QThread):
 			key = obd_sensors.SENSORS[index].shortname
 			if self.labels_collection[key] is not None:
 				self.labels_collection[key].setValue(value)
+		time.sleep(.1)
 	
 	#Debuging.. Simulate speed and rpm values.
 	def simulate_obd(self):
