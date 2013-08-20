@@ -14,20 +14,13 @@ class OBD_Recorder():
         self.port = None
         self.sensorlist = []
         localtime = time.localtime(time.time())
-        filename = path+"bike-"+str(localtime[0])+"-"+str(localtime[1])+"-"+str(localtime[2])+"-"+str(localtime[3])+"-"+str(localtime[4])+"-"+str(localtime[5])+".log"
-        #self.log_file = open(filename, "w", 128)
-        #self.log_file.write("Time,RPM,MPH,Throttle,Load,Gear\n");
-        print"Time,RPM,MPH,Throttle,Load,Gear\n" 
-
+        print"Time,\tRPM,\tMPH,\tThrottle,\tLoad,\tGear\n" 
         for item in log_items:
             self.add_log_item(item)
-
         self.gear_ratios = [34/13, 39/21, 36/23, 27/20, 26/21, 25/22]
-        #log_formatter = logging.Formatter('%(asctime)s.%(msecs).03d,%(message)s', "%H:%M:%S")
 
     def connect(self):
         portnames = scanSerial()
-        #portnames = ['COM10']
         print portnames
         for port in portnames:
             self.port = obd_io.OBDPort(port, None, 2, 2)
@@ -59,16 +52,16 @@ class OBD_Recorder():
         
         while 1:
             localtime = datetime.now()
-            current_time = str(localtime.hour)+":"+str(localtime.minute)+":"+str(localtime.second)+"."+str(localtime.microsecond)
+            current_time = str(localtime.hour)+":"+str(localtime.minute)+":"+str(localtime.second)+"."+str(localtime.millisecond)
             log_string = current_time
             results = {}
             for index in self.sensorlist:
                 (name, value, unit) = self.port.sensor(index)
-                log_string = log_string + ","+str(value)
+                log_string = log_string + ",\t"+str(value)
                 results[obd_sensors.SENSORS[index].shortname] = value;
 
             gear = self.calculate_gear(results["rpm"], results["speed"])
-            log_string = log_string + "," + str(gear)
+            log_string = log_string + ",\t" + str(gear)
             print log_string+"\n"
             
     def calculate_gear(self, rpm, speed):
@@ -98,3 +91,4 @@ o.connect()
 if not o.is_connected():
     print "Not connected"
 o.record_data()
+

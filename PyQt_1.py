@@ -1,54 +1,41 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
-#--------------QT----------------# 
 import obd_io
 import serial
 import platform
 import obd_sensors
-from datetime import datetime
 import time
-
-from obd_utils import scanSerial
-#---------------end of qt-----------------#
 import sys
+from obd_utils import scanSerial
+from random import randint
 from PyQt4 import QtGui
+from PyQt4 import QtCore
+from datetime import datetime
 
-class FullWindow(QtGui.QWidget):
-	def __init__(self, log_items):
-		super(FullWindow, self).__init__()
+
+
+class ObdThread(QtCore.QThread):
+	def __init__(self, log_items, labels_collection):
+		QtCore.QThread.__init__(self)
+		self.labels_collection = labels_collection
 		self.port = None
 		self.sensorlist = []
-		localtime = time.localtime(time.time())
-		#print"Time,\tRPM,\tMPH,\tThrottle,\tLoad,\tGear\n" 
 		for item in log_items:
 			self.add_log_item(item)
 		self.gear_ratios = [34/13, 39/21, 36/23, 27/20, 26/21, 25/22]
-		#Labels
-		self.speed = QtGui.QLabel('---', self)
-		self.speedUnit = QtGui.QLabel('mph', self)
-		self.rpm = QtGui.QLabel('----', self)
-		self.rpmUnit = QtGui.QLabel('rpm', self)
-		#EndLabels
-
-		
-		self.initUI()
-		self.connect()
 	
 	def connect(self):
 		portnames = scanSerial()
-		#print portnames
-		while self.port is not None:
+		print 'Connecting...'
+		while self.port is None:
 			for port in portnames:
 				self.port = obd_io.OBDPort(port, None, 2, 2)
 				if(self.port.State == 0):
 					self.port.close()
 					self.port = None
 				else:
+					print 'Connected!    '
 					break
-
-		#if(self.port):
-		#display connected icon
-		#print "Connected to "+self.port.port.name
 	
 	def is_connected(self):
 		return self.port
@@ -57,7 +44,6 @@ class FullWindow(QtGui.QWidget):
 		for index, e in enumerate(obd_sensors.SENSORS):
 			if(item == e.shortname):
 				self.sensorlist.append(index)
-				#print "Logging item: "+e.name
 				break
 	
 	def is_connected(self):
@@ -67,7 +53,6 @@ class FullWindow(QtGui.QWidget):
 		for index, e in enumerate(obd_sensors.SENSORS):
 			if(item == e.shortname):
 				self.sensorlist.append(index)
-				#print "Logging item: "+e.name
 				break
 
 	def calculate_gear(self, rpm, speed):
@@ -90,48 +75,59 @@ class FullWindow(QtGui.QWidget):
 		gear = min((abs(current_gear_ratio - i), i) for i in self.gear_ratios)[1] 
 		return gear
 
-	def record_data(self):
-		if(self.port is None):
-			return None
+	def update(self):
+		print 'Updating with OBD data...'		
+		#if(self.port is None):
+		#	return None
 		
-		#print "Logging started"
 		while 1:
-			localtime = datetime.now()
-			current_time = str(localtime.hour)+":"+str(localtime.minute)+":"+str(localtime.second)+"."+str(localtime.millisecond)
-			log_string = current_time
 			results = {}
 			for index in self.sensorlist:
 				(name, value, unit) = self.port.sensor(index)
-				#log_string = log_string + ",\t"+str(value)
+				if self.labels_collection[name] is not None:
+					self.labels_collection[name].setText(value)
 				results[obd_sensors.SENSORS[index].shortname] = value;
 			
-			speed.text = results['speed'] if results['speed'].length()>2 else ' '+results['speed']
-			rpm.text = results['rpm'] if results['rpm'].length()>2 else ' '+ results['rpm']
-			#gear = self.calculate_gear(results["rpm"], results["speed"])
-			#log_string = log_string + ",\t" + str(gear)
-			#print log_string+"\n"
+			#speed = str(randint(75,80))
+			#rpm = str(randint(3500,4000))
+			#self.labels_collection['speed'].setText(speed)
+			#self.labels_collection['rpm'].setText(rpm)
+			time.sleep(.1)
+			#print 'Updating speed '+ speed + ' and rpm ' + rpm
+			#gear = self.calculate_gear(results["rpm"], results["speed"])	
+
+	def run(self):
+		self.connect()
+		self.update()
+
+class FullWindow(QtGui.QWidget):
+	def __init__(self, log_items):
+		self.log_items = log_items
+		super(FullWindow, self).__init__()
+		self.speed = QtGui.QLabel('###', self)
+		self.speedUnit = QtGui.QLabel('mph', self)
+		self.rpm = QtGui.QLabel('####', self)
+		self.rpmUnit = QtGui.QLabel('rpm', self)
+		self.labels_collection = {'speed': self.speed, 'rpm':self.rpm}
+		self.initUI()
 	
 	def initUI(self):
+		print 'Initializing UI...'
 		uiSizes = QtGui.QDesktopWidget().availableGeometry()
-		#speed = QtGui.QLabel('250', self)
 		self.speed.setStyleSheet("QLabel { color:red; font-size:100px;qproperty-alignment: AlignRight;}")
-		#speedUnit = QtGui.QLabel('mph', self)        
+		self.speed.setScaledContents(True)
 		self.speedUnit.setStyleSheet("QLabel { color:white; font-size:40px;}")
-		self.speed.move(uiSizes.width()/2-60, uiSizes.height()/2-200)
+		self.speed.move(uiSizes.width()/2-90, uiSizes.height()/2-200)
 		self.speedUnit.move(uiSizes.width()/2+105, uiSizes.height()/2-145)
-		
-		#rpm = QtGui.QLabel('6525', self)
 		self.rpm.setStyleSheet("QLabel { color:red; font-size:100px;qproperty-alignment: AlignRight;}")	
-		#lblRpm = QtGui.QLabel('rpm', self)
+		self.rpm.setScaledContents(True)
 		self.rpmUnit.setStyleSheet("QLabel { color:white; font-size:40px;}")
-		self.rpm.move(uiSizes.width()/2-100, uiSizes.height()/2-50)	
+		self.rpm.move(uiSizes.width()/2-140, uiSizes.height()/2-50)	
 		self.rpmUnit.move(uiSizes.width()/2+124, uiSizes.height()/2+5)
-		
 		palette1 = QtGui.QPalette()
 		palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QImage("image.png")))
-		
 		self.setPalette(palette1)
-		self.showFullScreen()
+		#self.showFullScreen()
 		self.setWindowTitle("pyO-X")
 		self.show()
 	
@@ -141,12 +137,15 @@ class FullWindow(QtGui.QWidget):
 		self.rpm.hide()
 		self.rpmUnit.hide()
 
+	def startOBD(self):
+		self.obdthread = ObdThread(self.log_items, self.labels_collection)
+		self.obdthread.start()
+
 def main():
 	app = QtGui.QApplication(sys.argv)
-	logitems = ["rpm", "speed", "throttle_pos", "load"]
-	#o = OBD_Recorder('./', logitems)
-	#o.connect()
+	logitems = ["rpm", "speed"]
 	ex = FullWindow(logitems)
+	ex.startOBD()
 	sys.exit(app.exec_())
 
 if __name__=='__main__':
