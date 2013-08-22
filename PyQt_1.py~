@@ -25,27 +25,46 @@ class ObdThread(QtCore.QThread):
 			self.add_log_item(item)
 		self.gear_ratios = [34/13, 39/21, 36/23, 27/20, 26/21, 25/22]
 	
+	def showdisconnected(self):
+		for index, e in enumerate(self.labels_collection):
+			if e == 'connecting':
+				self.labels_collection[e].setVisible(True)
+			else:
+				self.labels_collection[e].setVisible(False)
+
+	def showconnected(self):
+		for index, e in enumerate(self.labels_collection):
+			if index == 'connecting':
+				self.labels_collection[e].setVisible(False)
+			else:
+				self.labels_collection[e].setVisible(True)
+
 	def connect(self):
 		portnames = scanSerial()
 		print 'Connecting...'
+		dot = 0
 		while self.port is None:
+			self.showdisconnected()
+			if dot == 0:
+				self.labels_collection['connecting'].setText('Connecting')
+			elif dot == 1 :
+				self.labels_collection['connecting'].setText('Connecting.')
+			elif dot == 2:
+				self.labels_collection['connecting'].setText('Connecting..')
+			else:
+				self.labels_collection['connecting'].setText('Connecting...')
+
 			for port in portnames:
 				self.port = obd_io.OBDPort(port, None, 2, 2)
 				if(self.port.State == 0):
 					self.port.close()
 					self.port = None
 				else:
-					print 'Connected!    '
+					print 'Connected!'
+					self.showconnected()
 					break
-	
-	def is_connected(self):
-		return self.port
-		
-	def add_log_item(self, item):
-		for index, e in enumerate(obd_sensors.SENSORS):
-			if(item == e.shortname):
-				self.sensorlist.append(index)
-				break
+			time.sleep(.1)
+			dot = dot+1 if dot<4 else 0
 	
 	def is_connected(self):
 		return self.port
@@ -83,17 +102,17 @@ class ObdThread(QtCore.QThread):
 		
 		while 1:
 			results = {}
-			#for index in self.sensorlist:
-			#	(name, value, unit) = self.port.sensor(index)
-			#	key = obd_sensors.SENSORS[index].shortname
-			#	if self.labels_collection[key] is not None:
-			#		self.labels_collection[key].setText(str(value))
-			#		results[key] = value;
+			for index in self.sensorlist:
+				(name, value, unit) = self.port.sensor(index)
+				key = obd_sensors.SENSORS[index].shortname
+				if self.labels_collection[key] is not None:
+					self.labels_collection[key].setText(str(value))
+					results[key] = value;
 			
-			speed = str(randint(75,80))
-			rpm = str(randint(3500,4000))
-			self.labels_collection['speed'].setText(speed)
-			self.labels_collection['rpm'].setText(rpm)
+			#speed = str(randint(75,80))
+			#rpm = str(randint(3500,4000))
+			#self.labels_collection['speed'].setText(speed)
+			#self.labels_collection['rpm'].setText(rpm)
 			time.sleep(.1)
 			#print 'Updating speed '+ speed + ' and rpm ' + rpm
 			#gear = self.calculate_gear(results["rpm"], results["speed"])	
@@ -106,16 +125,19 @@ class FullWindow(QtGui.QWidget):
 	def __init__(self, log_items):
 		self.log_items = log_items
 		super(FullWindow, self).__init__()
+		self.connecting = QtGui.QLabel("Connecting...", self)
 		self.speed = QtGui.QLabel('###', self)
 		self.speedUnit = QtGui.QLabel('mph', self)
 		self.rpm = QtGui.QLabel('####', self)
 		self.rpmUnit = QtGui.QLabel('rpm', self)
-		self.labels_collection = {'speed': self.speed, 'rpm':self.rpm}
+		self.labels_collection = {'speed': self.speed, 'rpm':self.rpm, 'connecting':self.connecting}
 		self.initUI()
 	
 	def initUI(self):
 		print 'Initializing UI...'
 		uiSizes = QtGui.QDesktopWidget().availableGeometry()
+		self.connecting.setStyleSheet(styles.stylesObd['style2'])
+		self.connecting.move(20, 20)
 		self.speed.setStyleSheet(styles.stylesObd['style1'])
 		self.speed.setScaledContents(True)
 		self.speedUnit.setStyleSheet(styles.stylesObd['style2'])
@@ -123,7 +145,7 @@ class FullWindow(QtGui.QWidget):
 		self.speedUnit.move(uiSizes.width()/2+105, uiSizes.height()/2-145)
 		self.rpm.setStyleSheet(styles.stylesObd['style1'])	
 		self.rpm.setScaledContents(True)
-		self.rpmUnit.setStyleSheet(stylesObd.stylesObd['style2'])
+		self.rpmUnit.setStyleSheet(styles.stylesObd['style2'])
 		self.rpm.move(uiSizes.width()/2-140, uiSizes.height()/2-50)	
 		self.rpmUnit.move(uiSizes.width()/2+124, uiSizes.height()/2+5)
 		palette1 = QtGui.QPalette()
