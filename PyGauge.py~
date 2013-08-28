@@ -13,7 +13,7 @@ class pygauge_thread(QtCore.QThread):
 		while x<100:
 			for gauge in self.gauges:
 				gauge.setValue(x)
-			time.sleep(.05)
+			time.sleep(.08)
 			x = 0 if x ==99 else x+1
 			#print 'Setting ' + str(float(x)/100) + ' and ' + str(x)
 		
