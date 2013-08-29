@@ -94,10 +94,10 @@ class pyox_obdthread(QtCore.QThread):
 
 	def run(self):
 		while 1:
-			#self.connect()
-			#self.read_obd()
-			self.simulate_obd()
-			time.sleep(.1)
+			self.connect()
+			self.read_obd()
+			#self.simulate_obd()
+			time.sleep(.01)
 
 
 	def read_obd(self):
@@ -105,12 +105,12 @@ class pyox_obdthread(QtCore.QThread):
 			(name, value, unit) = self.port.sensor(index)
 			key = obd_sensors.SENSORS[index].shortname
 			if self.labels_collection[key] is not None:
-				self.labels_collection[key].setText(str(value))
+				self.labels_collection[key].setValue(value)
 	
 	#Debuging.. Simulate speed and rpm values.
 	def simulate_obd(self):
-		speed = str(randint(75,80))
-		rpm = str(randint(3500,4000))
-		self.labels_collection['speed'].setText(speed)
-		self.labels_collection['rpm'].setText(rpm)
+		speed = randint(75,80)
+		rpm = randint(3500,4000)
+		self.labels_collection['speed'].setValue(speed)
+		self.labels_collection['rpm'].setValue(rpm)
 		#cleargear = self.calculate_gear(rpm, speed)	
