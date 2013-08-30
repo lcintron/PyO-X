@@ -1,0 +1,62 @@
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
+import platform
+import sys
+import styles
+from pyox_obdthread import pyox_obdthread
+from random import randint
+from PyQt4 import QtGui
+from PyQt4 import QtCore
+from datetime import datetime
+from GaugeWidget import GaugeWidget
+
+class PyOX_Gui(QtGui.QWidget):
+	def __init__(self, log_items):
+		self.log_items = log_items
+		super(PyOX_Gui, self).__init__()
+		
+		#This label is required to be sent to the pyox_obdthread class
+		#as the class makes a default call to it.
+		self.connecting = QtGui.QLabel("Connecting...", self)
+		self.speed = GaugeWidget('speed', 'mph', 0, 190)
+		self.rpm = GaugeWidget('rpm', 'rpm', 0,9000)
+		self.initUI()
+		self.labels_collection = {'speed': self.speed
+								, 'rpm':self.rpm
+								, 'connecting':self.connecting
+								}
+	
+	#initialize ui components
+	def initUI(self):
+		uiSizes = QtGui.QDesktopWidget().availableGeometry()
+		self.connecting.setStyleSheet(styles.stylesObd['style2'])
+		self.connecting.move(20, 20)
+
+		hbox = QtGui.QHBoxLayout()
+		hbox.addWidget(self.speed)
+		hbox.addWidget(self.rpm)
+		vbox = QtGui.QVBoxLayout()
+		vbox.addLayout(hbox)
+		self.setLayout(vbox)
+		
+		palette1 = QtGui.QPalette()
+		palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QImage("image.png")))
+		self.setPalette(palette1)
+		self.setWindowTitle("PyO-X")
+		self.showFullScreen()
+		self.show()
+
+	#creates and starts a new thread that reads the obd2 port and updates the ui
+	def start_obd(self):
+		self.obdthread = pyox_obdthread(self.log_items, self.labels_collection)
+		self.obdthread.start()
+
+def main():
+	app = QtGui.QApplication(sys.argv)
+	logitems = ["rpm", "speed"]
+	ex = PyOX_Gui(logitems)
+	ex.start_obd()
+	sys.exit(app.exec_())
+
+if __name__=='__main__':
+	main()

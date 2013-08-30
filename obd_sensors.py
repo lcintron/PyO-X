@@ -44,7 +44,7 @@ def rpm(code):
 
 def speed(code):
     code = hex_to_int(code)
-    return code / 1.609
+    return code / 1.60934
 
 def percent_scale(code):
     code = hex_to_int(code)
