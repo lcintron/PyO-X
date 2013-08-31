@@ -27,30 +27,32 @@ class pyox_obdthread(QtCore.QThread):
 		for index, e in enumerate(self.labels_collection):
 			if e == 'connecting':
 				self.labels_collection[e].setVisible(True)
-			#else:
-			#	self.labels_collection[e].setVisible(False)
+			else:
+				self.labels_collection[e].setVisible(False)
 
+			
 	def showconnected(self):
 		for index, e in enumerate(self.labels_collection):
 			if index == 'connecting':
 				self.labels_collection[e].setVisible(False)
-			#else:
-			#	self.labels_collection[e].setVisible(True)
+			else:
+				self.labels_collection[e].setVisible(True)
 
 	def connect(self):
 		dot = 0
 		while self.port is None:
 			portnames = scanSerial()
 			self.showdisconnected()
-			if dot == 0:
-				self.labels_collection['connecting'].setText('Connecting')
-			elif dot == 1 :
-				self.labels_collection['connecting'].setText('Connecting.')
-			elif dot == 2:
-				self.labels_collection['connecting'].setText('Connecting..')
-			else:
-				self.labels_collection['connecting'].setText('Connecting...')
-
+			#if dot == 0:
+			#	self.labels_collection['connecting'].setText('Connecting')
+			#elif dot == 1 :
+			#	self.labels_collection['connecting'].setText('Connecting.')
+			#elif dot == 2:
+			#	self.labels_collection['connecting'].setText('Connecting..')
+			#else:
+			#	self.labels_collection['connecting'].setText('Connecting...')
+			time.sleep(.1)
+			
 			for port in portnames:
 				self.port = obd_io.OBDPort(port, None, 2, 2)
 				if(self.port.State == 0):
@@ -60,7 +62,6 @@ class pyox_obdthread(QtCore.QThread):
 					print 'Connected!'
 					self.showconnected()
 					break
-			time.sleep(.1)
 			dot = dot+1 if dot<4 else 0
 	
 	def is_connected(self):

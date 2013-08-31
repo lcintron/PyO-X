@@ -13,8 +13,8 @@ class pygauge_thread(QtCore.QThread):
 		while x<100:
 			for gauge in self.gauges:
 				gauge.setValue(x)
-			time.sleep(.05)
-			x = 0 if x ==99 else x+1
+			time.sleep(.1)
+			x = 0 if x ==99 else x+0.01
 		
  
 class Example(QtGui.QWidget):
@@ -26,13 +26,13 @@ class Example(QtGui.QWidget):
 		self.setWindowTitle('Dial Guage')
 
 		layout = QtGui.QVBoxLayout(self)
-		self.gauge = GaugeWidget('oiltemp','oil temp',0)
+		self.gauge = GaugeWidget('oiltemp','oil temp',0, 100,"{0:.0f}" )
 		self.gauge.setSizePolicy(QtGui.QSizePolicy(
 		QtGui.QSizePolicy.Expanding,
 			QtGui.QSizePolicy.Expanding))
 		layout.addWidget(self.gauge)
 		
-		self.gauge2 = GaugeWidget('mph','mph',0)
+		self.gauge2 = GaugeWidget('mph','mph',0,100)
 		self.gauge2.setSizePolicy(QtGui.QSizePolicy(
 			QtGui.QSizePolicy.Expanding,
 			QtGui.QSizePolicy.Expanding))

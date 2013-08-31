@@ -17,20 +17,20 @@ class PyOX_Gui(QtGui.QWidget):
 		
 		#This label is required to be sent to the pyox_obdthread class
 		#as the class makes a default call to it.
-		self.connecting = QtGui.QLabel("Connecting...", self)
-		self.speed = GaugeWidget('speed', 'mph', 0, 190)
+		#self.connecting = QtGui.QLabel("Connecting...", self)
+		self.speed = GaugeWidget('speed', 'mph', 0, 190, "{0:.0f}" )
 		self.rpm = GaugeWidget('rpm', 'rpm', 0,9000)
 		self.initUI()
 		self.labels_collection = {'speed': self.speed
 								, 'rpm':self.rpm
-								, 'connecting':self.connecting
+								#, 'connecting':self.connecting
 								}
 	
 	#initialize ui components
 	def initUI(self):
 		uiSizes = QtGui.QDesktopWidget().availableGeometry()
-		self.connecting.setStyleSheet(styles.stylesObd['style2'])
-		self.connecting.move(20, 20)
+		#self.connecting.setStyleSheet(styles.stylesObd['style2'])
+		#self.connecting.move(20, 20)
 
 		hbox = QtGui.QHBoxLayout()
 		hbox.addWidget(self.speed)

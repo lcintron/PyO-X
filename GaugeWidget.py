@@ -3,7 +3,7 @@ from PyQt4 import QtGui, QtCore, Qt
 
 class GaugeWidget(QtGui.QWidget):
  
-	def __init__(self, name='', text='', initialValue=0, textformat='%f',maxValue=100,   *args, **kwargs):
+	def __init__(self, name='', text='', initialValue=0, maxValue=100,textformat='{}',   *args, **kwargs):
 		super(GaugeWidget, self).__init__(*args, **kwargs)
 		self._bg = QtGui.QPixmap("speedo4.png")
 		self.name = name
@@ -65,7 +65,6 @@ class GaugeWidget(QtGui.QWidget):
 		fontSize=size.width()*.20
 		gauge_rect.moveCenter(QtCore.QPoint(pos.x(), pos.y()-1*fontSize))
 		painter.setFont(QtGui.QFont('AnyStyle',fontSize))
-		txt = '0' if self.raw_value is 0 else self.textformat % self.raw_value
-		painter.drawText(gauge_rect,QtCore.Qt.AlignCenter, str(txt))
+		painter.drawText(gauge_rect,QtCore.Qt.AlignCenter, self.textformat.format(self.raw_value))
 		painter.end()	
 		super(GaugeWidget,self).paintEvent(e)
